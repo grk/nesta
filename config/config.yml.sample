@@ -43,9 +43,11 @@ subtitle: "(change this text in config/config.yml)"
 #
 development:
   cache: false
+  http_cache: false
   content: content
 
 production:
   cache: true
+  http_cache: false
   content: /var/apps/nesta/shared/content
   # google_analytics_code: "UA-???????-?"

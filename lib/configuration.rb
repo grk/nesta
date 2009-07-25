@@ -9,6 +9,10 @@ module Nesta
       get(environment)["cache"] || false
     end
 
+		def self.http_cache
+			get(environment)["http_cache"] || false
+		end
+
     def self.title
       configuration["title"]
     end

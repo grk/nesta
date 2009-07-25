@@ -74,6 +74,11 @@ helpers do
   def format_date(date)
     date.strftime("%d %B %Y")
   end
+
+	def last_modified_file_mtime
+    files = Dir["#{Nesta::Configuration.content_path}/***/**/*"] + Dir["views/*.haml"]
+    File.mtime(files.sort_by { |p| File.mtime(p) }.first)
+  end
 end
 
 not_found do
@@ -88,6 +93,7 @@ end unless Sinatra::Application.environment == :development
 
 get "/css/master.css" do
   content_type "text/css", :charset => "utf-8"
+	last_modified File.mtime("views/master.sass") if Nesta::Configuration.http_cache
   cache sass(:master)
 end
 
@@ -98,6 +104,7 @@ get "/" do
   @title = "#{@title} - #{@subtitle}"
   @articles = Article.find_all[0..7]
   @body_class = "home"
+	last_modified last_modified_file_mtime if Nesta::Configuration.http_cache
   cache haml(:index)
 end
 
@@ -107,6 +114,7 @@ get "#{Nesta::Configuration.article_prefix}/:permalink" do
   raise Sinatra::NotFound if @article.nil?
   set_title(@article)
   set_from_page(:description, :keywords, :comments)
+	last_modified last_modified_file_mtime if Nesta::Configuration.http_cache
   cache haml(:article)
 end
 
@@ -138,5 +146,6 @@ get "#{Nesta::Configuration.category_prefix}/:permalink" do
   raise Sinatra::NotFound if @category.nil?
   set_title(@category)
   set_from_page(:description, :keywords)
+	last_modified last_modified_file_mtime if Nesta::Configuration.http_cache
   cache haml(:category)
 end
